@@ -8,6 +8,5 @@ terraform {
 }
 
 provider "aws" {
-  profile = "learning"
   region  = "eu-west-3"
 }
