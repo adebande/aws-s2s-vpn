@@ -11,7 +11,7 @@ locals {
 
   # On-premises side
   vpn_local_ipv4_network_cidr = "172.16.0.0/16"
-  
+
   # AWS side
   vpn_remote_ipv4_network_cidr = "10.4.0.0/16"
 }
@@ -40,7 +40,7 @@ locals {
 resource "aws_ec2_transit_gateway" "tgw" {
   description = "S2S Transit Gateway"
   tags = {
-    Name = "${local.name_prefix}-transit-gateway"
+    Name = "${local.name_prefix}-tgw"
   }
 }
 
@@ -51,6 +51,9 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "vpc" {
   vpc_id                                          = aws_vpc.target[each.key].id
   transit_gateway_default_route_table_association = false
   transit_gateway_default_route_table_propagation = false
+  tags = {
+    Name = "${local.name_prefix}-tgw-attachment-${each.key}"
+  }
 }
 
 
@@ -67,6 +70,9 @@ resource "aws_ec2_transit_gateway_route" "vpn" {
 resource "aws_ec2_transit_gateway_route_table" "vpc" {
   for_each           = local.target_vpc
   transit_gateway_id = aws_ec2_transit_gateway.tgw.id
+  tags = {
+    Name = "${local.name_prefix}-tgw-route-table-${each.key}"
+  }
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "vpc" {
@@ -117,6 +123,9 @@ resource "aws_route_table" "tgw" {
   route {
     cidr_block         = local.vpn_local_ipv4_network_cidr
     transit_gateway_id = aws_ec2_transit_gateway.tgw.id
+  }
+  tags = {
+    Name = "${local.name_prefix}-route-table-${each.key}"
   }
 }
 
