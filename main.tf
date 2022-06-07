@@ -10,7 +10,7 @@ locals {
     e = "10.4.17.0/24"
   }
 
-  remote_gateway_ip = "82.66.115.76"
+  remote_gateway_ip = "195.25.201.193"
 
   # On-premises side
   vpn_local_ipv4_network_cidr = "172.16.0.0/16"
