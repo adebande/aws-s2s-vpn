@@ -372,14 +372,34 @@ resource "aws_customer_gateway" "customer_gateway" {
 }
 
 resource "aws_vpn_connection" "main" {
-  transit_gateway_id       = aws_ec2_transit_gateway.tgw.id
-  customer_gateway_id      = aws_customer_gateway.customer_gateway.id
-  type                     = "ipsec.1"
-  static_routes_only       = true
-  tunnel1_preshared_key    = var.vpn_tunnel_psk
-  tunnel2_preshared_key    = var.vpn_tunnel_psk
-  local_ipv4_network_cidr  = var.vpn_local_ipv4_network_cidr
-  remote_ipv4_network_cidr = var.vpn_remote_ipv4_network_cidr
+  transit_gateway_id                   = aws_ec2_transit_gateway.tgw.id
+  customer_gateway_id                  = aws_customer_gateway.customer_gateway.id
+  type                                 = "ipsec.1"
+  static_routes_only                   = true
+  tunnel1_preshared_key                = var.vpn_tunnel_psk
+  tunnel2_preshared_key                = var.vpn_tunnel_psk
+  tunnel1_ike_versions                 = ["ikev1", "ikev2"]
+  tunnel2_ike_versions                 = ["ikev1", "ikev2"]
+  tunnel1_phase1_dh_group_numbers      = ["14"]
+  tunnel2_phase1_dh_group_numbers      = ["14"]
+  tunnel1_phase1_encryption_algorithms = ["AES256"]
+  tunnel2_phase1_encryption_algorithms = ["AES256"]
+  tunnel1_phase1_integrity_algorithms  = ["SHA2-256"]
+  tunnel2_phase1_integrity_algorithms  = ["SHA2-256"]
+  tunnel1_phase1_lifetime_seconds      = "28800"
+  tunnel2_phase1_lifetime_seconds      = "28800"
+  tunnel1_phase2_dh_group_numbers      = ["14"]
+  tunnel2_phase2_dh_group_numbers      = ["14"]
+  tunnel1_phase2_encryption_algorithms = ["AES256"]
+  tunnel2_phase2_encryption_algorithms = ["AES256"]
+  tunnel1_phase2_integrity_algorithms  = ["SHA2-256"]
+  tunnel2_phase2_integrity_algorithms  = ["SHA2-256"]
+  tunnel1_phase2_lifetime_seconds      = "3600"
+  tunnel2_phase2_lifetime_seconds      = "3600"
+  tunnel1_dpd_timeout_seconds          = "45"
+  tunnel2_dpd_timeout_seconds          = "45"
+  local_ipv4_network_cidr              = var.vpn_local_ipv4_network_cidr
+  remote_ipv4_network_cidr             = var.vpn_remote_ipv4_network_cidr
   tags = {
     Name = "${var.name_prefix}-vpn-connection"
   }
@@ -406,7 +426,7 @@ resource "aws_vpn_connection" "main" {
                                                                                              
 */
 
-data "aws_ami" "ubuntu" {
+/* data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
@@ -465,7 +485,7 @@ resource "aws_security_group" "allow_all" {
   tags = {
     Name = "${var.name_prefix}-allow-all-sg-${each.key}"
   }
-}
+} */
 
 
 # http://www.network-science.de/ascii/ -- Star Wars
